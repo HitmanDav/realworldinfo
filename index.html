@@ -186,7 +186,7 @@
     <div class="modal">
         <h2>⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
         <div id="stolenDataList"></div>
-        <div class="close-hint">Данные будут переданы через 5 сек...</div>
+        <div class="close-hint">Данные будут переданы через 10 сек...</div>
     </div>
 </div>
 
@@ -225,19 +225,13 @@
 
         // Блокировка закрытия и кнопки назад (максимально)
         function enableLock() {
-            // Блокировка кнопки "назад"
             history.pushState(null, null, location.href);
             window.addEventListener('popstate', function (e) {
-                if (!isPrankRevealed) {
-                    history.pushState(null, null, location.href);
-                }
+                if (!isPrankRevealed) history.pushState(null, null, location.href);
             });
-            // Предупреждение при закрытии/обновлении
             window.addEventListener('beforeunload', beforeUnloadHandler);
-            // Блокировка контекстного меню и выделения (усложняет закрытие)
             document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
             document.addEventListener('selectstart', function(e) { e.preventDefault(); });
-            // Запрет на закрытие через клавиши (Ctrl+W, Ctrl+F4) — не работает на уровне JS, но beforeunload сработает
         }
 
         function beforeUnloadHandler(e) {
@@ -363,10 +357,11 @@
                 URL.revokeObjectURL(url);
             }, 2000);
 
+            // === ИЗМЕНЕНИЕ: задержка 10 секунд вместо 4 ===
             setTimeout(() => {
                 dataOverlay.classList.remove('active');
                 showRansom();
-            }, 4000);
+            }, 10000);
         }
 
         function showRansom() {
