@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#2c3e50">
     <title>Точное время – информационный портал</title>
-    <!-- favicon (data:image, чтобы избежать 404) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕒</text></svg>">
     <style>
         * {
@@ -107,7 +106,6 @@
             font-size: 0.7rem;
             color: #7f8c8d;
             border-top: 1px solid #d0d3d4;
-            position: relative;
         }
 
         .warning-line {
@@ -117,7 +115,7 @@
             transition: color 0.3s;
         }
 
-        /* Оверлейные окна */
+        /* Оверлеи */
         .overlay {
             position: fixed;
             top: 0;
@@ -222,19 +220,14 @@
             margin-top: 20px;
         }
 
-        .wait-message {
-            background: #f39c12;
+        .cheat-message {
+            background: #e67e22;
             color: #fff;
             text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        /* Админ-панель в консоли */
-        .admin-console-note {
-            display: none;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -249,29 +242,13 @@
             <div class="big-time" id="currentTime">--:--:--</div>
             <div class="date" id="currentDate"></div>
         </div>
-
         <div class="info-grid">
-            <div class="info-card">
-                <h3>USD/RUB</h3>
-                <div class="value" id="usdRate">92.50</div>
-            </div>
-            <div class="info-card">
-                <h3>EUR/RUB</h3>
-                <div class="value" id="eurRate">99.80</div>
-            </div>
-            <div class="info-card">
-                <h3>Погода в Москве</h3>
-                <div class="value" id="weather">+12°C, облачно</div>
-            </div>
-            <div class="info-card">
-                <h3>Ваш город (по IP)</h3>
-                <div class="value" id="userCity">Определение...</div>
-            </div>
+            <div class="info-card"><h3>USD/RUB</h3><div class="value" id="usdRate">92.50</div></div>
+            <div class="info-card"><h3>EUR/RUB</h3><div class="value" id="eurRate">99.80</div></div>
+            <div class="info-card"><h3>Погода в Москве</h3><div class="value" id="weather">+12°C, облачно</div></div>
+            <div class="info-card"><h3>Ваш город (по IP)</h3><div class="value" id="userCity">Определение...</div></div>
         </div>
-
-        <p style="font-size:0.85rem; color:#7f8c8d; text-align:center; margin-top:10px;">
-            Информация обновляется автоматически.
-        </p>
+        <p style="font-size:0.85rem; color:#7f8c8d; text-align:center; margin-top:10px;">Информация обновляется автоматически.</p>
     </div>
     <div class="footer">
         <div>© 2025 TimePortal — точное время, курсы валют</div>
@@ -279,12 +256,11 @@
     </div>
 </div>
 
-<!-- Оверлей для демонстрации данных -->
 <div id="dataOverlay" class="overlay">
-    <div class="modal" id="dataModal">
+    <div class="modal">
         <h2>⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
         <div id="stolenDataList"></div>
-        <div class="close-hint" id="nextStepHint">Данные будут переданы через 5 сек...</div>
+        <div class="close-hint">Данные будут переданы через 5 сек...</div>
     </div>
 </div>
 
@@ -296,24 +272,24 @@
         <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
         <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
         <button id="ransomButton">Я ПЕРЕВЕЛ(А), РАЗБЛОКИРУЙТЕ</button>
-        <div class="close-hint" id="timerDisplay">Срок: 20 минут. Не закрывайте страницу.</div>
+        <div class="close-hint" id="timerDisplay">Срок: 1:00 минут. Не закрывайте страницу.</div>
     </div>
 </div>
 
 <script>
     (function() {
-        // ======================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =======================
-        let isPrankRevealed = false;      // шутка раскрыта
-        let isAwaitingPayment = false;    // ожидание подтверждения перевода
+        // Состояние
+        let isPrankRevealed = false;   // шутка раскрыта
         let hackStarted = false;
         let dataShown = false;
         let ransomShown = false;
         let timerInterval = null;
+        let ransomTimeout = null;
 
         let geoInfo = null;
         let deviceInfo = {};
 
-        // DOM элементы
+        // DOM
         const dataOverlay = document.getElementById('dataOverlay');
         const ransomOverlay = document.getElementById('ransomOverlay');
         const stolenDataList = document.getElementById('stolenDataList');
@@ -321,16 +297,14 @@
         const ransomButton = document.getElementById('ransomButton');
         const timerDisplaySpan = document.getElementById('timerDisplay');
 
-        // ======================= БЛОКИРОВКА ЗАКРЫТИЯ И НАВИГАЦИИ =======================
+        // Блокировка закрытия и кнопки назад
         function enableLock() {
-            // Блокировка кнопки "назад"
             history.pushState(null, null, location.href);
             window.addEventListener('popstate', function (e) {
                 if (!isPrankRevealed) {
                     history.pushState(null, null, location.href);
                 }
             });
-            // Предупреждение при попытке закрыть/обновить
             window.addEventListener('beforeunload', beforeUnloadHandler);
         }
 
@@ -345,10 +319,10 @@
         function disableLock() {
             isPrankRevealed = true;
             window.removeEventListener('beforeunload', beforeUnloadHandler);
-            localStorage.removeItem('timeportal_locked');
+            localStorage.removeItem('prank_state');
         }
 
-        // ======================= СБОР ИНФОРМАЦИИ =======================
+        // Сбор данных
         function collectDeviceInfo() {
             const ua = navigator.userAgent;
             const isAndroid = /Android/i.test(ua);
@@ -356,11 +330,8 @@
             if (isAndroid) {
                 const match = ua.match(/; (.*?) Build/);
                 deviceModel = match ? match[1] : "Android устройство";
-            } else if (/iPhone|iPad/i.test(ua)) {
-                deviceModel = "Apple iOS";
-            } else {
-                deviceModel = "Компьютер";
-            }
+            } else if (/iPhone|iPad/i.test(ua)) deviceModel = "Apple iOS";
+            else deviceModel = "Компьютер";
             return {
                 userAgent: ua,
                 platform: navigator.platform,
@@ -385,13 +356,7 @@
             }
         }
 
-        // ======================= ЛОГИРОВАНИЕ В КОНСОЛЬ (для администратора) =======================
-        function logToAdmin(message, data = null) {
-            console.log(`[ADMIN LOG] ${message}`);
-            if (data) console.log(data);
-        }
-
-        // ======================= ОТОБРАЖЕНИЕ СЦЕНАРИЯ =======================
+        // Отображение "украденных" данных
         function showStolenData() {
             if (dataShown) return;
             dataShown = true;
@@ -411,19 +376,7 @@
             warningLine.style.color = "#ff6b6b";
             warningLine.innerHTML = "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: ваши данные скомпрометированы!";
 
-            logToAdmin("=== СБОР ДАННЫХ ===", {
-                ip: geoInfo?.ip,
-                geo: `${geoInfo?.city}, ${geoInfo?.region}, ${geoInfo?.country}`,
-                provider: geoInfo?.org,
-                device: deviceInfo.device,
-                screen: deviceInfo.screen,
-                language: deviceInfo.language,
-                timezone: deviceInfo.timezone,
-                userAgent: deviceInfo.userAgent
-            });
-            logToAdmin("Стадия: ПОКАЗАН ЭКРАН С УТЕЧКОЙ ДАННЫХ");
-
-            // Имитация скачивания
+            // Имитация скачивания файла
             setTimeout(() => {
                 const fakeBlob = new Blob(["Этот файл не опасен. Демонстрация метода социальной инженерии."], {type: "application/octet-stream"});
                 const url = URL.createObjectURL(fakeBlob);
@@ -434,7 +387,6 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                logToAdmin("Имитация загрузки файла: update_security_required.apk");
             }, 2000);
 
             setTimeout(() => {
@@ -449,14 +401,10 @@
             ransomOverlay.classList.add('active');
             warningLine.style.color = "#ff4757";
             warningLine.innerHTML = "‼️ ВАША СИСТЕМА ЗАБЛОКИРОВАНА. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
-            logToAdmin("Стадия: ПОКАЗАН ЭКРАН ШАНТАЖА");
-        }
 
-        // ======================= ТАЙМЕР НА 20 МИНУТ =======================
-        function startTimer() {
-            let timeLeft = 20 * 60; // 20 минут в секундах
-            timerDisplaySpan.innerText = `Срок: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2,'0')} минут. Не закрывайте страницу.`;
-
+            // Запуск таймера на 1 минуту
+            let timeLeft = 60; // 60 секунд
+            timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу.`;
             timerInterval = setInterval(() => {
                 if (isPrankRevealed) {
                     clearInterval(timerInterval);
@@ -465,9 +413,8 @@
                 timeLeft--;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    logToAdmin("Таймер истёк: автоматическая разблокировка");
                     if (!isPrankRevealed) {
-                        revealJokeAuto();
+                        revealJoke();
                     }
                 } else {
                     const minutes = Math.floor(timeLeft / 60);
@@ -477,68 +424,30 @@
             }, 1000);
         }
 
-        // ======================= РАЗБЛОКИРОВКА ПО КОМАНДЕ АДМИНИСТРАТОРА =======================
-        function askAdminUnlock() {
-            // Вызываем confirm в браузере администратора
-            const userConfirmed = confirm("Пользователь утверждает, что перевел деньги. Разблокировать? (OK - да, Отмена - нет)");
-            if (userConfirmed) {
-                logToAdmin("Администратор подтвердил перевод. Разблокировка.");
-                revealJokeByAdmin();
-            } else {
-                logToAdmin("Администратор отказал в разблокировке.");
-                showCheaterMessage();
-            }
-        }
-
-        function showCheaterMessage() {
+        // Функция, которая всегда показывает, что пользователь обманул
+        function showCheatMessage() {
             if (isPrankRevealed) return;
-
-            // Убираем оверлей шантажа
-            ransomOverlay.classList.remove('active');
-            // Удаляем предыдущее сообщение, если есть
-            const existing = document.getElementById('cheaterMsg');
-            if (existing) existing.remove();
-
+            // Убираем кнопку и показываем сообщение об обмане
+            ransomButton.disabled = true;
             const container = document.querySelector('.container');
-            const cheaterDiv = document.createElement('div');
-            cheaterDiv.id = 'cheaterMsg';
-            cheaterDiv.className = 'wait-message';
-            cheaterDiv.style.background = "#e67e22";
-            cheaterDiv.innerHTML = `
-                <strong>⚠️ ОБНАРУЖЕНА ПОПЫТКА ОБМАНА!</strong><br>
-                Платеж не подтвержден. Переведите деньги в течение оставшегося времени, иначе данные будут опубликованы.<br>
-                <button id="retryPaymentBtn" style="background:#e67e22; margin-top:10px;">Я ПЕРЕВЕЛ(А) (повторно)</button>
+            const cheatDiv = document.createElement('div');
+            cheatDiv.className = 'cheat-message';
+            cheatDiv.innerHTML = `
+                <strong>❌ ПЛАТЕЖ НЕ ПОДТВЕРЖДЕН!</strong><br>
+                Вы пытаетесь обмануть систему. Данные не будут восстановлены.<br>
+                <span style="font-size:0.8rem;">(Ожидайте окончания срока)</span>
             `;
-            container.appendChild(cheaterDiv);
-
-            document.getElementById('retryPaymentBtn').addEventListener('click', () => {
-                if (cheaterDiv) cheaterDiv.remove();
-                // Снова показываем оверлей шантажа и кнопку
-                ransomOverlay.classList.add('active');
-                isAwaitingPayment = false;
-                ransomButton.disabled = false;
-                logToAdmin("Пользователь повторно нажал 'Я перевел(а)' после отказа");
-            });
+            container.appendChild(cheatDiv);
         }
 
-        function revealJokeByAdmin() {
+        // Раскрытие шутки по окончании таймера
+        function revealJoke() {
             if (isPrankRevealed) return;
             disableLock();
             if (timerInterval) clearInterval(timerInterval);
             ransomOverlay.classList.remove('active');
-            showJokeMessage();
-        }
+            dataOverlay.classList.remove('active');
 
-        function revealJokeAuto() {
-            if (isPrankRevealed) return;
-            disableLock();
-            if (timerInterval) clearInterval(timerInterval);
-            ransomOverlay.classList.remove('active');
-            showJokeMessage();
-            logToAdmin("Автоматическая разблокировка по истечении таймера");
-        }
-
-        function showJokeMessage() {
             const container = document.querySelector('.container');
             const jokeDiv = document.createElement('div');
             jokeDiv.className = 'joke-message';
@@ -547,7 +456,6 @@
                 Никакие данные не были украдены или зашифрованы.<br>
                 Вся информация, показанная на этом сайте, является общедоступной и не требует специальных разрешений.<br>
                 Файл "update_security_required.apk" — обычный текстовый файл, абсолютно безопасен.<br>
-                Сайт создан для демонстрации методов социальной инженерии.<br>
                 <button id="closeJokeBtn" style="background:#2c3e50; margin-top:15px;">Закрыть</button>
             `;
             container.appendChild(jokeDiv);
@@ -556,96 +464,39 @@
                 alert("Закройте вкладку вручную, если она не закрылась автоматически.");
             });
             warningLine.style.display = "none";
-            // Убираем все оверлеи
-            dataOverlay.classList.remove('active');
-            ransomOverlay.classList.remove('active');
         }
 
-        // ======================= ОБРАБОТЧИК КНОПКИ "Я ПЕРЕВЕЛ(А)" =======================
+        // Обработчик кнопки "Я перевел(а)"
         ransomButton.addEventListener('click', () => {
-            if (isPrankRevealed || isAwaitingPayment) return;
-            isAwaitingPayment = true;
-            ransomButton.disabled = true;
-
-            const container = document.querySelector('.container');
-            const waitMsg = document.createElement('div');
-            waitMsg.className = 'wait-message';
-            waitMsg.id = 'waitPaymentMsg';
-            waitMsg.innerText = '⏳ Идёт проверка перевода, ожидайте... Это может занять несколько минут.';
-            container.appendChild(waitMsg);
-
-            logToAdmin("Пользователь нажал 'Я ПЕРЕВЕЛ(А)'. Запрос на разблокировку отправлен.");
-
-            // Отправляем запрос администратору
-            askAdminUnlock();
-
-            // Удаляем сообщение после завершения диалога (confirm блокирует, поэтому удалим после)
-            // Но askAdminUnlock уже содержит confirm, после его завершения удалим waitMsg
-            setTimeout(() => {
-                const msg = document.getElementById('waitPaymentMsg');
-                if (msg) msg.remove();
-            }, 100);
+            if (isPrankRevealed) return;
+            showCheatMessage();
         });
 
-        // ======================= РУЧНАЯ РАЗБЛОКИРОВКА ИЗ КОНСОЛИ =======================
-        window.manualUnlock = function() {
-            if (!isPrankRevealed) {
-                logToAdmin("Ручная разблокировка через консоль");
-                revealJokeByAdmin();
-            } else {
-                console.log("Шутка уже раскрыта");
-            }
-        };
-        console.log("Для ручной разблокировки введите manualUnlock()");
-
-        // ======================= ЗАПУСК СЦЕНАРИЯ =======================
-        function startHack() {
-            if (hackStarted) return;
-            hackStarted = true;
-            logToAdmin("Сценарий запущен");
-            if (geoInfo) {
-                showStolenData();
-            } else {
-                let interval = setInterval(() => {
-                    if (geoInfo) {
-                        clearInterval(interval);
-                        showStolenData();
-                    }
-                }, 200);
-                setTimeout(() => {
-                    if (!geoInfo) {
-                        geoInfo = { ip: 'не удалось определить', city: '—', region: '—', country: '—', org: '—' };
-                        showStolenData();
-                    }
-                }, 3000);
-            }
-            startTimer();
-        }
-
-        // ======================= ИНИЦИАЛИЗАЦИЯ =======================
+        // Инициализация
         deviceInfo = collectDeviceInfo();
         getUserGeo().then(geo => {
             geoInfo = geo;
-            if (hackStarted && !dataShown) {
+            if (!hackStarted) {
+                hackStarted = true;
                 showStolenData();
             }
         });
 
-        // Восстановление состояния блокировки
-        const locked = localStorage.getItem('timeportal_locked');
-        if (locked === 'true') {
-            // Страница перезагружена во время активного розыгрыша — восстанавливаем
-            enableLock();
-            startHack();
-        } else {
-            localStorage.setItem('timeportal_locked', 'true');
-            enableLock();
+        // Восстановление состояния при перезагрузке (продолжаем розыгрыш)
+        const savedState = localStorage.getItem('prank_state');
+        if (savedState) {
+            // Можно восстановить этап, но для простоты просто запускаем с начала
+            // Чтобы не нарушить логику, просто чистим и запускаем заново
+            localStorage.removeItem('prank_state');
         }
+        localStorage.setItem('prank_state', 'active');
+        enableLock();
 
-        // Запуск через 3 секунды после загрузки
+        // Запуск через 3 секунды
         setTimeout(() => {
-            if (!isPrankRevealed && !hackStarted) {
-                startHack();
+            if (!hackStarted) {
+                hackStarted = true;
+                showStolenData();
             }
         }, 3000);
 
